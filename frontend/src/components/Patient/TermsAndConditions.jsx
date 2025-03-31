@@ -13,7 +13,7 @@ function TermsAndConditions() {
         transition={{ duration: 0.8 }}
       >
         <motion.div
-          className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-8 mt-20"
+          className="max-w-4xl mx-auto bg-white shadow-2xl rounded-lg p-8 mt-20"
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5 }}

@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
-import profiePic from "../../assets/human6.jpg";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import AdminSidebar from "./AdminSidebar";
 
@@ -92,7 +90,7 @@ function AdminNurse() {
   return (
     <section className="bg-slate-300 flex justify-center items-center">
       <div className="h-[80%] w-[80%] bg-white shadow-xl p-2 flex">
-        <AdminSidebar userName={"Admin"} profiePic={profiePic} />
+        <AdminSidebar userName={"Admin"}/>
         <div className=" w-[70%] ms-24 p-4 flex flex-col justify-start gap-5 ">
           <p className="font-semibold text-3xl">Nurses</p>
           <div className="w-full">

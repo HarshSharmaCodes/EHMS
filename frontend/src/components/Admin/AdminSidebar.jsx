@@ -1,8 +1,8 @@
 import axios from "axios";
 import React from "react";
+import { useDispatch } from 'react-redux';
 import { NavLink } from "react-router-dom";
-import adminProfile from "../../assets/human6.jpg";
-import {useDispatch} from 'react-redux';
+import adminProfile from "../../assets/Admin-Profile.png";
 import { logout } from "../../redux/UserSlice.js";
 
 const AdminSidebar = ({ profilePic, userName }) => {

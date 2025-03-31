@@ -1,17 +1,16 @@
-import React,{useState} from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'
-import Swal from 'sweetalert2';
+import { motion } from "framer-motion";
+import React, { useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import {
   login,
   loginFailure,
   loginProgress,
   loginSuccess,
 } from "../../redux/UserSlice.js";
-import {motion } from "framer-motion";
-import { useInView } from 'react-intersection-observer';
-import { Link } from 'react-router-dom';
 
 function DoctorAuth() {
 
@@ -77,7 +76,7 @@ function DoctorAuth() {
 
   return (
     <section
-    className='bg-[#FEFAE0] h-screen w-screen'>
+    className='bg-[#ffffff] h-screen w-screen'>
         <motion.div
          ref={ref}
          initial={{ opacity: 0, x: -50 }} 
@@ -85,7 +84,7 @@ function DoctorAuth() {
          transition={{ duration: 1.5 }}
          whileInView={{ opacity: 1 }}
           className="flex items-center justify-center h-full max-w-7xl m-auto md:w-[60%] rounded-xl lg:w-[40%]  ">
-        <div className="xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md bg-[#CCD5AE] shadow-xl shadow-black  p-4 rounded-lg">
+        <div className="xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md bg-[#ffffff] shadow-xl shadow-black  p-4 rounded-lg">
           <h2 className="text-center text-2xl font-bold leading-tight text-black">
             Doctor SignIn
           </h2>

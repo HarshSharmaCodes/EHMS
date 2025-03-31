@@ -23,24 +23,22 @@ function Navbar() {
         <div className="flex items-center space-x-3">
           <NavLink to="/" className="flex items-center space-x-3">
             <img src="LogoK.png" alt="logo" className="h-10 w-10" />
-            <div className="text-3xl font-semibold text-center">E HEALTH MONITORING</div>
+            <div className="text-3xl font-semibold text-center">
+              E HEALTH MONITORING
+            </div>
           </NavLink>
         </div>
 
-        {/* Desktop Navigation */}
         <div className="justify-center items-center gap-4 md:gap-6 text-lg md:text-xl hidden md:flex">
           <NavLink style={navLinkStyle} to="/">
             Home
           </NavLink>
-          <NavLink style={navLinkStyle} to="/appointment">
+          {/* <NavLink style={navLinkStyle} to="/appointment">
             Appointment
-          </NavLink>
+          </NavLink> */}
           <NavLink style={navLinkStyle} to="/about-us">
             About Us
           </NavLink>
-          {/* <NavLink style={navLinkStyle} to="/contact-us">
-            Contact Us
-          </NavLink> */}
           <button
             className="bg-slate-900 text-white p-2 rounded-full hover:scale-110 hover:bg-slate-800 duration-300 active:scale-90"
             onClick={handleClick}
@@ -91,14 +89,14 @@ function Navbar() {
           >
             Home
           </NavLink>
-          <NavLink
+          {/* <NavLink
             className="py-6 text-2xl"
             style={navLinkStyle}
             to="/appointment"
             onClick={handleNav}
           >
             Appointment
-          </NavLink>
+          </NavLink> */}
           <NavLink
             className="py-6 text-2xl"
             style={navLinkStyle}

@@ -2,13 +2,12 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useInView } from "react-intersection-observer";
+import Swal from "sweetalert2";
 import feedback from "../../assets/feedback.png";
 import banner from "../../assets/hero.png";
 import review from "../../assets/ReviewProfile.jpeg";
 import service from "../../assets/services.png";
 import Footer from "../Shared/Footer";
-
-import Swal from "sweetalert2";
 
 function Home() {
   const { ref, inView } = useInView({

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import { useInView } from 'react-intersection-observer';
+import { useInView } from "react-intersection-observer";
 import Swal from "sweetalert2";
 import appoint from "../../assets/appoint.png";
 import Navbar from "../Shared/Navbar";
@@ -10,20 +10,20 @@ function Appointment() {
   const [doctors, setDoctors] = useState([]);
 
   const { ref, inView } = useInView({
-    triggerOnce: true, 
-    threshold: 0.3, 
+    triggerOnce: true,
+    threshold: 0.3,
   });
 
   const [appointment, setAppointment] = useState({
     patient: "",
     phone: "",
     appointmentDate: "",
-    date:new Date(),
+    date: new Date(),
     time: "",
     doctor: "",
     reason: "",
     email: "",
-    city:"",
+    city: "",
   });
 
   useEffect(() => {
@@ -36,13 +36,12 @@ function Appointment() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     await axios
       .post(`http://localhost:5000/appointment/add-appointment`, {
         patient: appointment.patient,
         phone: appointment.phone,
         doctor: appointment.doctor,
-        appointmentDate: appointment.appointmentDate ,
+        appointmentDate: appointment.appointmentDate,
         reason: appointment.reason,
         email: appointment.email,
         time: appointment.time,
@@ -54,7 +53,6 @@ function Appointment() {
           confirmButtonText: "Ok",
           text: "Appointment Request Sent Successfully!",
         });
-       
       })
       .catch((err) => {
         Swal.fire({
@@ -67,30 +65,28 @@ function Appointment() {
   };
 
   return (
-    <motion.section
-    
-
-    className="bg-[#FFFFFF]">
+    <motion.section className="bg-[#FFFFFF]">
       <Navbar />
       <div className="h-screen f-screen  flex justify-center items-center">
         <div className=" h-[80%] w-full mt-[80px] flex justify-center items-center gap-5 rounded-xl">
           <motion.div
-          ref={ref}
-          initial={{ opacity: 0, x: -50 }} 
-          animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : -50 }} 
-          transition={{ duration: 1.5 }}
-          whileInView={{ opacity: 1 }}
-           className="hidden lg:block">
+            ref={ref}
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : -50 }}
+            transition={{ duration: 1.5 }}
+            whileInView={{ opacity: 1 }}
+            className="hidden lg:block"
+          >
             <img src={appoint} className="size-80" alt="nurse" />
           </motion.div>
           <motion.div
-          ref={ref}
-          initial={{ opacity: 0, x: 50 }} 
-          animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : 50 }} 
-          transition={{ duration: 1.5 }}
-          whileInView={{ opacity: 1 }}
-          
-          className=" shadow-xl bg-[#FFFFFF] shadow-black lg:w-[50%] w-full overflow-auto">
+            ref={ref}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : 50 }}
+            transition={{ duration: 1.5 }}
+            whileInView={{ opacity: 1 }}
+            className=" shadow-xl bg-[#FFFFFF] shadow-black lg:w-[50%] w-full overflow-auto"
+          >
             <form className="flex flex-col w-full h-full  gap-4 p-5 justify-center lg:ps-14 items-center">
               <p className="text-2xl font-semibold">Book Appointment</p>
               <div className="w-full flex m-2 justify-center items-center ">
@@ -100,7 +96,12 @@ function Appointment() {
                     className=" h-10 w-[300px] rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                     type="text"
                     placeholder="Name"
-                    onChange={(e) => setAppointment({ ...appointment, patient: e.target.value })}
+                    onChange={(e) =>
+                      setAppointment({
+                        ...appointment,
+                        patient: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="w-full flex flex-col">
@@ -109,7 +110,9 @@ function Appointment() {
                     className=" h-10 w-[300px] rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                     type="number"
                     placeholder="Phone/Mobile"
-                    onChange={(e) => setAppointment({ ...appointment, phone: e.target.value })}
+                    onChange={(e) =>
+                      setAppointment({ ...appointment, phone: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -120,7 +123,12 @@ function Appointment() {
                     className=" h-10 w-[300px] rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                     type="date"
                     placeholder="Date"
-                    onChange={(e) => setAppointment({ ...appointment, appointmentDate: e.target.value })}
+                    onChange={(e) =>
+                      setAppointment({
+                        ...appointment,
+                        appointmentDate: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="w-[90%] flex flex-col">
@@ -129,7 +137,9 @@ function Appointment() {
                     className=" h-10 w-[300px] rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                     type="time"
                     placeholder="Time"
-                    onChange={(e) => setAppointment({ ...appointment, time: e.target.value })}
+                    onChange={(e) =>
+                      setAppointment({ ...appointment, time: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -139,7 +149,9 @@ function Appointment() {
                   <select
                     id="doctors"
                     className="h-10 w-[300px] rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                    onChange={(e) => setAppointment({ ...appointment, doctor: e.target.value })}
+                    onChange={(e) =>
+                      setAppointment({ ...appointment, doctor: e.target.value })
+                    }
                   >
                     <option value="Choose you Consultant">
                       Choose you Consultant
@@ -157,7 +169,9 @@ function Appointment() {
                     className="h-10 w-[300px] rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                     rows="10"
                     placeholder="Reason"
-                    onChange={(e) => setAppointment({ ...appointment, reason: e.target.value })}
+                    onChange={(e) =>
+                      setAppointment({ ...appointment, reason: e.target.value })
+                    }
                   ></textarea>
                 </div>
               </div>
@@ -168,16 +182,20 @@ function Appointment() {
                     className=" h-10 w-[300px] rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                     type="email"
                     placeholder="Enter Email"
-                    onChange={(e) => setAppointment({ ...appointment, email: e.target.value })}
+                    onChange={(e) =>
+                      setAppointment({ ...appointment, email: e.target.value })
+                    }
                   />
                 </div>
                 <div className="w-full flex flex-col">
-                  City: 
+                  City:
                   <input
                     className=" h-10 w-[300px] rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                     type="text"
                     placeholder="Enter City"
-                    onChange={(e) => setAppointment({ ...appointment, city: e.target.value })}
+                    onChange={(e) =>
+                      setAppointment({ ...appointment, city: e.target.value })
+                    }
                   />
                 </div>
               </div>

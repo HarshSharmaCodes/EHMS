@@ -1,9 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import profiePic from "../../../assets/human6.jpg";
+import profilePic from "../../../assets/User.jpg";
 import UserSidebar from "./UserSidebar";
-
 
 function UserBookAppointment() {
   const [userData, setuserData] = useState([]);
@@ -17,38 +16,59 @@ function UserBookAppointment() {
   const [email, setEmail] = useState("");
   const [time, setTime] = useState("");
   const [doctors, setDoctors] = useState([]);
-  
+
+  const handleTimeChange = (e) => {
+    const selectedTime = e.target.value;
+    const [hours, minutes] = selectedTime.split(":").map(Number);
+
+    // Convert selected time into minutes for easy comparison
+    const selectedMinutes = hours * 60 + minutes;
+
+    // Allowed range (in minutes)
+    const minTime = 11 * 60 + 30; // 11:30 AM
+    const maxTime = 17 * 60; // 5:00 PM
+
+    if (selectedMinutes >= minTime && selectedMinutes <= maxTime) {
+      setTime(selectedTime);
+    } else {
+      Swal.fire({
+        title: "Invalid Time",
+        text: "Appointments can only be booked between 11:30 AM and 5:00 PM.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   const getDay = () => {
     const today = new Date();
-    return today.toISOString().split('T')[0];
+    return today.toISOString().split("T")[0];
   };
 
   useEffect(() => {
     const fetchInfo = async (e) => {
-
       const user = JSON.parse(localStorage.getItem("user"));
       setuserData(user);
-
       setName(user.userName);
       setMobileNumber(user.phoneNumber);
       setAddress(user.address.street);
       setGender(user.gender);
       setEmail(user.email);
     };
+
     const fetchDoctors = async (e) => {
       const res = await axios.get("http://localhost:5000/doctor/get-doctors");
       setDoctors(res.data);
     };
 
     fetchDoctors();
-
     fetchInfo();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     await axios
-      .post('http://localhost:5000/appointment/add-appointment', {
+      .post("http://localhost:5000/appointment/add-appointment", {
         patient: userData.userName,
         phone: mobileNumber,
         doctor: doctor,
@@ -78,47 +98,44 @@ function UserBookAppointment() {
   return (
     <section className="bg-slate-300 flex justify-center items-center">
       <div className="h-[80%] w-[80%] bg-white shadow-xl p-2 flex">
-      <UserSidebar profiePic={profiePic} userName={userData.userName} />
+        <UserSidebar profilePic={profilePic} userName={userData.userName} />
         <div className=" w-[70%] ms-24 p-4 flex flex-col justify-around ">
           <p className="font-semibold text-3xl">Book Appointment</p>
           <form action="" className="flex flex-col h-[80%] justify-between">
             <div className="w-full flex justify-between">
               <div className="flex flex-col w-[50%] justify-start">
-                <p>Enter Your Name:</p>
+                <p>Name:</p>
                 <input
-                value={userName}
-                  onChange={(e) => setName(e.target.value)}
-                  className="flex h-10 w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={userData.userName || ""}
+                  disabled
+                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   type="text"
-                  placeholder="Name"
-                ></input>
+                />
               </div>
               <div className="flex flex-col w-[50%] justify-start">
-                <p>Enter Your Email:</p>
+                <p>Email:</p>
                 <input
-                value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex h-10  w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={userData.email || ""}
+                  disabled
+                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   type="email"
-                  placeholder="Email"
                 ></input>
               </div>
             </div>
             <div className="w-full flex justify-between">
               <div className="flex flex-col w-[50%] justify-start">
-                <p>Enter Your Phone:</p>
+                <p>Phone Number:</p>
                 <input
-                value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value)}
-                  className="flex h-10 w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={userData.phoneNumber || ""}
+                  disabled
+                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   type="text"
-                  placeholder="Phone"
                 ></input>
               </div>
               <div className="flex flex-col w-[50%] justify-start">
                 <p>Appointment Date:</p>
                 <input
-                value={appointmentDate}
+                  value={appointmentDate}
                   onChange={(e) => setAppointmentDate(e.target.value)}
                   className="flex h-10  w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                   type="date"
@@ -130,26 +147,23 @@ function UserBookAppointment() {
 
             <div className="w-full flex justify-between">
               <div className="flex flex-col w-[50%] justify-start">
-                <p>Enter Your Gender:</p>
+                <p>Gender:</p>
                 <input
-                value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  className="flex h-10 w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={userData.gender || ""}
+                  disabled
+                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   type="text"
-                  placeholder="Male/Female/Others"
                 ></input>
               </div>
               <div className="flex flex-col w-[50%] justify-start">
-                <p>Enter Doctor Name:</p>
+                <p>Choose Your Doctor:</p>
                 <select
-                value={doctor}
+                  value={doctor}
                   onChange={(e) => setDoctor(e.target.value)}
                   id="doctors"
                   className="flex h-10 w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <option value="Choose you Consultant">
-                    Choose you Consultant
-                  </option>
+                  <option value="Choose your Doctor">Choose you Doctor</option>
                   {doctors.map((doctors) => (
                     <option key={doctors._id} value={doctors._id}>
                       {doctors.name}
@@ -162,7 +176,7 @@ function UserBookAppointment() {
               <div className="flex flex-col w-[50%] justify-start">
                 <p>Enter Reason:</p>
                 <input
-                value={reason}
+                  value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   className="flex h-10 w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                   type="text"
@@ -172,11 +186,12 @@ function UserBookAppointment() {
               <div className="flex flex-col w-[50%] justify-start">
                 <p>Enter Appointment Time:</p>
                 <input
-                  onChange={(e) => setTime(e.target.value)}
+                  value={time}
+                  onChange={handleTimeChange}
                   className="flex h-10  w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                   type="time"
                   placeholder="Time"
-                ></input>
+                />
               </div>
             </div>
             <button

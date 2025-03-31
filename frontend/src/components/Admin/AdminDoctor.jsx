@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
-import profiePic from "../../assets/human6.jpg";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../Shared/Loader";
 import AdminSidebar from "./AdminSidebar";
@@ -9,7 +7,6 @@ import AdminSidebar from "./AdminSidebar";
 function AdminDoctor() {
   const [doctors, setDoctors] = useState([]);
   const userString = localStorage.getItem("user");
-
   const [docname, setDocName] = useState("");
   const [docspec, setDocSpecialization] = useState("");
   const [docemail, setDocEmail] = useState("");
@@ -112,7 +109,7 @@ function AdminDoctor() {
   return (
     <section className="bg-slate-300 flex justify-center items-center">
       <div className="h-[80%] w-[80%] bg-white shadow-xl p-2 flex">
-      <AdminSidebar  userName={"Admin"} profiePic={profiePic}/>
+      <AdminSidebar userName={"Admin"}/>
         <div className=" w-[70%] ms-24 p-4 flex flex-col justify-start gap-5 ">
           <p className="font-semibold text-3xl">Doctors</p>
           <div className="w-full">

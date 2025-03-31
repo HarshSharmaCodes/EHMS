@@ -3,7 +3,9 @@ const Schema = mongoose.Schema;
 
 const appointmentSchema = new Schema({
   doctor: {
-    type:String,
+    type: mongoose.Schema.Types.ObjectId, // Change from String to ObjectId
+    ref: "Doctor",
+    // type:String,
     required: true,
   },
   patient: {

@@ -87,7 +87,7 @@ router.post("/add-doctor", async (req, res) => {
 router.get("/get-appointments/:id", async (req, res) => {
   const doctorId = req.params.id;
   try{
-    const appointments = await Appointment.find({ doctorId });
+    const appointments = await Appointment.find({ doctorId }).populate("doctorId");
     
     if(appointments.length === 0){
       return res.json({ message: "No appointments found" });
@@ -115,13 +115,13 @@ router.post("/add-message" , async (req , res) => {
 });
 router.get("/get-message/:email" , async (req , res) => {
 
-  const email = req.params.email; // Correct way to access email from request parameters
+  const email = req.params.email;
   
   try {
     const message = await Communication.find({email});
     res.json(message);
   } catch (error) {
-    res.status(500).json({ error: "Could not get the message" }); // Set proper status code and error response
+    res.status(500).json({ error: "Could not get the message" });
   }
 });
 

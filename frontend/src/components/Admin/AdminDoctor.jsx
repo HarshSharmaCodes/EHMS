@@ -6,215 +6,195 @@ import AdminSidebar from "./AdminSidebar";
 
 function AdminDoctor() {
   const [doctors, setDoctors] = useState([]);
-  const userString = localStorage.getItem("user");
   const [docname, setDocName] = useState("");
   const [docspec, setDocSpecialization] = useState("");
   const [docemail, setDocEmail] = useState("");
+  const [isCreate, setIsCreate] = useState(false);
+
+  // Fetch doctors data
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/doctor/get-doctors"
+      );
+      setDoctors(response.data);
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        icon: "error",
+        text: "Error Fetching Data!",
+      });
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/doctor/get-doctors"
-        );
-        setDoctors(response.data);
-      } catch (error) {
-        Swal.fire({
-          title: "Error",
-          icon: "error",
-          text: "Error Fetching Data!",
-        });
-      }
-    };
-
     fetchData();
-  }, []); 
+  }, []);
 
-  if (!doctors) {
+  if (doctors.length === 0) {
     return <Loader />;
   }
 
+  // Add a new doctor
   const handleAddDoctor = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:5000/doctor/add-doctor",{
-        name:docname,
-        specialization:docspec,
-        email:docemail
-      }).then((res)=>{
-        if(res.data.message === "Success"){
-          Swal.fire({
-            title: "Success",
-            icon: "success",
-            text: "Doctor Added Successfully!",
-          });
-        }
+    try {
+      const res = await axios.post("http://localhost:5000/doctor/add-doctor", {
+        name: docname,
+        specialization: docspec,
+        email: docemail,
+      });
 
-      }).catch((e)=>{
-        Swal.fire({
-          title: "Error",
-          icon: "error",
-          text: "Error Adding Doctor!",
-        });
-      })
-  };
-
-  const [isCreate, setIsCreate] = useState(false);
-
-  const editPatient = async (id) => {
-    await axios
-      .put(`http://localhost:5000/doctor/update-doctor/${id}`, {})
-      .then((res) => {
+      if (res.data.message === "Success") {
         Swal.fire({
           title: "Success",
           icon: "success",
-          text: "Doctor Updated Successfully!",
+          text: "Doctor Added Successfully!",
         });
-      })
-      .catch((err) => {
-        Swal.fire({
-          title: "Error",
-          icon: "warning",
-          text: "Could not update Doctor!",
-        });
+        setDocName("");
+        setDocSpecialization("");
+        setDocEmail("");
+        setIsCreate(false);
+        fetchData();
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Error",
+        icon: "error",
+        text: "Error Adding Doctor!",
       });
+    }
   };
 
-  const deletePatient = async (id) => {
-    await axios
-      .delete(`http://localhost:5000/doctor/delete-doctor/${id}`,)
-      .then((res) => {
-        Swal.fire({
-          title: "Success",
-          icon: "success",
-          text: "Patient Deleted Successfully!",
-        });
-      })
-      .catch((err) => {
-        Swal.fire({
-          title: "Error",
-          icon: "error",
-          text: "Error Deleting Patient!",
-        });
+  const editDoctor = async (id, updatedData) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/doctor/update-doctor/${id}`,
+        updatedData
+      );
+      Swal.fire({
+        title: "Success",
+        icon: "success",
+        text: "Doctor Updated Successfully!",
       });
+      fetchData();
+    } catch (err) {
+      Swal.fire({
+        title: "Error",
+        icon: "warning",
+        text: "Could not update Doctor!",
+      });
+    }
   };
 
-  const handleCreate = () => {
-    setIsCreate(!isCreate);
-  };
-
-  const handleGoBack = () => {
-    setIsCreate(!isCreate);
+  // Delete doctor
+  const deleteDoctor = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/doctor/delete-doctor/${id}`);
+      Swal.fire({
+        title: "Success",
+        icon: "success",
+        text: "Doctor Deleted Successfully!",
+      });
+      fetchData();
+    } catch (err) {
+      Swal.fire({
+        title: "Error",
+        icon: "error",
+        text: "Error Deleting Doctor!",
+      });
+    }
   };
 
   return (
     <section className="bg-slate-300 flex justify-center items-center">
       <div className="h-[80%] w-[80%] bg-white shadow-xl p-2 flex">
-      <AdminSidebar userName={"Admin"}/>
-        <div className=" w-[70%] ms-24 p-4 flex flex-col justify-start gap-5 ">
+        <AdminSidebar userName={"Admin"} />
+        <div className="w-[70%] ms-24 p-4 flex flex-col justify-start gap-5">
           <p className="font-semibold text-3xl">Doctors</p>
           <div className="w-full">
             <div className="relative overflow-auto shadow-md sm:rounded-lg">
-              <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              {/* Table Styling */}
+              <table className="w-full text-sm text-left text-gray-500 border-collapse">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3">
-                      #
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Doctor Name
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Doctor Email
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Department
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Actions
-                    </th>
+                    <th className="px-6 py-3 border-b">#</th>
+                    <th className="px-6 py-3 border-b">Doctor Name</th>
+                    <th className="px-6 py-3 border-b">Doctor Email</th>
+                    <th className="px-6 py-3 border-b">Department</th>
+                    <th className="px-6 py-3 border-b">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {doctors &&
-                    doctors.map((item, index) => (
-                      <tr key={item._id} className="text-black">
-                        <td scope="col" className="px-6 py-3">
-                          {item.doctorId}
-                        </td>
-                        <td scope="col" className="px-6 py-3">
-                          {item.name}
-                        </td>
-                        <td scope="col" className="px-6 py-3">
-                          {item.email}
-                        </td>
-                        <td scope="col" className="px-6 py-3">
-                          {item.specialization}
-                        </td>
-                        <td scope="col" className="d-flex gap-3 ">
-                          
-                          
-                          <button
-                            onClick={() => {
-                              deletePatient(item._id);
-                            }}
-                            className="btn btn-danger"
-                          >
-                            Remove
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                  {doctors.map((item, index) => (
+                    <tr key={item._id} className="text-black border-b">
+                      <td className="px-6 py-3">{index + 1}</td>
+                      <td className="px-6 py-3">{item.name}</td>
+                      <td className="px-6 py-3">{item.email}</td>
+                      <td className="px-6 py-3">{item.specialization}</td>
+                      <td className="flex gap-3 py-3">
+                        <button
+                          onClick={() => deleteDoctor(item._id)}
+                          className="bg-black text-white px-4 py-1 rounded hover:bg-red-700 transition duration-200"
+                        > Remove </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           </div>
           <button
-            onClick={handleCreate}
-            className="bg-slate-900 p-2 w-[10%] rounded-full hover:scale-110 duration-200 active:scale-90  text-white"
+            onClick={() => setIsCreate(true)}
+            className="bg-slate-900 p-2 w-[10%] rounded-full hover:scale-110 active:scale-90 transition duration-200 text-white"
           >
             Create
           </button>
         </div>
+
+        {/* Doctor Registration Form */}
         {isCreate && (
-          <div className="absolute h-[78%] w-[79%] z-50 bg-white">
-            <form className="flex flex-col w-full h-full justify-center gap-4 items-center">
-              <div className="flex flex-col w-[40%] items-center ">
-                <p className="">Enter Doctors Name:</p>
+          <div className="absolute h-[78%] w-[79%] z-50 bg-white flex justify-center items-center">
+            <form className="flex flex-col w-[50%] gap-4">
+              <div className="flex flex-col">
+                <label>Enter Doctor's Name:</label>
                 <input
+                  value={docname}
                   onChange={(e) => setDocName(e.target.value)}
-                  className="flex h-10  w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="border border-gray-300 px-3 py-2 rounded focus:ring-1 focus:ring-gray-400"
                   type="text"
                   placeholder="Doctor Name"
-                ></input>
+                />
               </div>
-
-              <div className="flex flex-col w-[40%] items-center ">
-                <p className="">Enter Doctors Email:</p>
+              <div className="flex flex-col">
+                <label>Enter Doctor's Email:</label>
                 <input
+                  value={docemail}
                   onChange={(e) => setDocEmail(e.target.value)}
-                  className="flex h-10  w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                  type="text"
+                  className="border border-gray-300 px-3 py-2 rounded focus:ring-1 focus:ring-gray-400"
+                  type="email"
                   placeholder="Email"
-                ></input>
+                />
               </div>
-              <div className="flex flex-col w-[40%] items-center ">
-                <p className="">Enter Doctors Specialization:</p>
+              <div className="flex flex-col">
+                <label>Enter Doctor's Specialization:</label>
                 <input
-
+                  value={docspec}
                   onChange={(e) => setDocSpecialization(e.target.value)}
-                  className="flex h-10  w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="border border-gray-300 px-3 py-2 rounded focus:ring-1 focus:ring-gray-400"
                   type="text"
                   placeholder="Specialization"
-                ></input>
+                />
               </div>
-
-              <button onClick={ handleAddDoctor} className=" w-[35%] bg-black text-white rounded-full text-md font-medium p-2 cursor-pointer hover:scale-110 duration-200 active:scale-90">
+              <button
+                onClick={handleAddDoctor}
+                className="w-full bg-black text-white rounded-full text-md font-medium p-2 hover:scale-110 duration-200 active:scale-90"
+              >
                 Add Doctor
               </button>
-
               <button
-                onClick={handleGoBack}
-                className="bg-black text-white rounded-full text-md font-medium p-2 cursor-pointer hover:scale-105 duration-200 active:scale-90"
+                onClick={() => setIsCreate(false)}
+                className="w-full bg-gray-500 text-white rounded-full text-md font-medium p-2 hover:scale-105 duration-200 active:scale-90"
               >
                 {"<- Go back"}
               </button>

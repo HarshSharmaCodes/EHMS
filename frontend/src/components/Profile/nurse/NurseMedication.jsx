@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import profilePic from "../../../assets/doct5.jpg";
+import profilePic from "../../../assets/Nurse.png";
 import NurseSidebar from "./NurseSidebar";
 
 function NurseMedication() {

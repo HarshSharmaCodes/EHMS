@@ -1,42 +1,26 @@
-import React,{useState, useEffect} from "react";
-import { NavLink } from "react-router-dom";
-import profilePic from "../../../assets/doct5.jpg";
 import axios from "axios";
-import Swal from "sweetalert2";
-import NurseSidebar from "./NurseSidebar";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import profilePic from "../../../assets/Nurse.png";
+import NurseSidebar from "./NurseSidebar";
 
 function NurseBed() {
- 
-
-  
-
-  const [message ,  setMessage] = useState([]);
-
-
-  const {currentUser} = useSelector((state) => state.user)
-
-
-
-  
+  const [message, setMessage] = useState([]);
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await axios.get(`http://localhost:5000/doctor/get-message/${currentUser.email}`)
-        .then((res) =>{
-          setMessage(res.data);
-
-        })  
-        
+        await axios
+          .get(`http://localhost:5000/doctor/get-message/${currentUser.email}`)
+          .then((res) => {
+            setMessage(res.data);
+          });
       } catch (error) {
-        console.error('Error fetching users:', error);
-
+        console.error("Error fetching users:", error);
       }
     };
-  
     fetchData();
-  
   }, []);
 
   return (
@@ -59,15 +43,14 @@ function NurseBed() {
                     <th scope="col" className="px-6 py-3">
                       Message
                     </th>
-                    
                   </tr>
                 </thead>
                 <tbody>
-                  {message ?
+                  {message ? (
                     message.map((item, index) => (
                       <tr key={index} className="text-black">
                         <td scope="col" className="px-6 py-3">
-                          {index+1}
+                          {index + 1}
                         </td>
                         <td scope="col" className="px-6 py-3">
                           {item.from}
@@ -75,14 +58,15 @@ function NurseBed() {
                         <td scope="col" className="px-6 py-3">
                           {item.message}
                         </td>
-                         
                       </tr>
-                    )):<p>Inbox is Empty !!</p>}
+                    ))
+                  ) : (
+                    <p>Inbox is Empty !!</p>
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
-          
         </div>
       </div>
     </section>

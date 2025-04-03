@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
-import profilePic from "../../../assets/doct5.jpg";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import profilePic from "../../../assets/Nurse.png";
 import NurseSidebar from "./NurseSidebar";
 
 function NurseProfile() {
-  const [userData, setuserData] = useState([]);
+  const [userData, setuserData] = useState({});
   const [name, setName] = useState("");
   const [phoneno, setMobileNumber] = useState("");
   const [address, setAddress] = useState("");
@@ -17,57 +16,53 @@ function NurseProfile() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    const fetchInfo = async (e) => {
-      const user = JSON.parse(localStorage.getItem("user"));
-      setuserData(user);
-      setName(user.name || "");
-      setMobileNumber(user.phoneno || "");
-      setAddress(user.address ? user.address.street || "" : "");
-      setCity(user.address ? user.address.city || "" : "");
-      setState(user.address ? user.address.state || "" : "");
-      const formattedDateOfBirth = user.dob
-        ? user.dob.split("T")[0]
-        : "";
-      setdateofBirth(formattedDateOfBirth);
-      setGender(user.gender || "");
-      setEmail(user.email || "");
+    const fetchInfo = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user")) || {};
+        setuserData(user);
+        setName(user.name || "");
+        setMobileNumber(user.phoneno || "");
+        setAddress(user.address?.street || "");
+        setCity(user.address?.city || "");
+        setState(user.address?.state || "");
+        setdateofBirth(user.dob ? user.dob.split("T")[0] : "");
+        setGender(user.gender || "");
+        setEmail(user.email || "");
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
     };
-
     fetchInfo();
   }, []);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      axios
-        .put("http://localhost:5000/nurse/profile-update", {
+      const res = await axios.put(
+        "http://localhost:5000/nurse/profile-update",
+        {
           userId: userData._id,
           updatedProfile: {
-            email: email,
-            name: name,
-            phoneno: phoneno,
-            address: {
-              street: address,
-              city: city,
-              state: state,
-            },
-            gender: gender,
-            dob: dob,
+            email,
+            name,
+            phoneno,
+            address: { street: address, city, state },
+            gender,
+            dob,
           },
-        })
-        .then((res) => {
-          if (res.data.status === "Success") {
-            Swal.fire({
-              title: "Success",
-              icon: "success",
-              confirmButtonText: "Ok",
-              text: "Profile Updated Successfully!",
-            });
-            const user = res.data.user;
-            localStorage.setItem("user", JSON.stringify(user));
-            window.location.href = "/nurse-profile";
-          }
+        }
+      );
+
+      if (res.data.status === "Success") {
+        Swal.fire({
+          title: "Success",
+          icon: "success",
+          confirmButtonText: "Ok",
+          text: "Profile Updated Successfully!",
         });
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        window.location.href = "/nurse-profile";
+      }
     } catch (err) {
       Swal.fire({
         title: "Error",
@@ -78,11 +73,10 @@ function NurseProfile() {
     }
   };
 
-
   return (
     <section className="bg-slate-300 flex justify-center items-center">
       <div className="h-[80%] w-[80%] bg-white shadow-xl p-2 flex">
-      <NurseSidebar profilePic={profilePic} userName={userData.name} />
+        <NurseSidebar profilePic={profilePic} userName={userData.name} />
         <div className=" w-[70%] ms-24 p-4 flex flex-col justify-around ">
           <p className="font-semibold text-3xl">Account Settings</p>
           <form action="" className="flex flex-col h-[80%] justify-between">

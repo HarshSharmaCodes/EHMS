@@ -1,32 +1,32 @@
 const express = require("express");
 const router = express.Router();
-const  Nurse  = require("../models/nurse");
+const Nurse = require("../models/nurse");
 const bcrypt = require("bcrypt");
 
 const checkAdmin = require("../middlewares/checkAdmin");
 const { error } = require("console");
 
 router.get("/get-nurses", async (req, res) => {
-    try {
-      const nurses = await Nurse.find({}).populate("department" , "name");
-  
-      res.json(nurses);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+  try {
+    const nurses = await Nurse.find({}).populate("department", "name");
+
+    res.json(nurses);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 router.get("/get-allNurses", async (req, res) => {
-    try {
-      const nurses = await Nurse.find()
-  
-      res.json(nurses);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+  try {
+    const nurses = await Nurse.find()
+
+    res.json(nurses);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 router.post("/add-nurse", async (req, res) => {
-  const {name, email,department} = req.body;
+  const { name, email, department } = req.body;
   try {
     const existingUser = await Nurse.findOne({ email });
 
@@ -36,7 +36,7 @@ router.post("/add-nurse", async (req, res) => {
         .json({ error: "Nurse with this email already exists" });
     }
     const firstemail = email.split('@')[0];
-    const password = firstemail + '@123' ;
+    const password = firstemail + '@123';
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -49,9 +49,9 @@ router.post("/add-nurse", async (req, res) => {
 
     const savedUser = await newUser.save();
 
-    res.status(200).json({savedUser,message:"Success"});
+    res.status(200).json({ savedUser, message: "Success" });
   } catch (error) {
-    res.status(500).json({error: error.message });
+    res.status(500).json({ error: error.message });
   }
 
 });
@@ -69,6 +69,21 @@ router.put("/profile-update", async (req, res) => {
     res.status(200).json({ status: "Success", user: updatedUser });
   } catch (error) {
     console.error("Error updating profile:", error.message);
+  }
+});
+
+router.delete("/delete-nurse/:id", async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const deletedNurse = await Nurse.findByIdAndDelete(userId);
+
+    if (!deletedNurse) {
+      return res.status(404).json({ error: "Nurse not found" });
+    }
+
+    res.json({ message: "Nurse deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

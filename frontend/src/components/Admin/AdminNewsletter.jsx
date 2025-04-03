@@ -8,13 +8,11 @@ function AdminNewsletter() {
 
   const fetchSentMessages = async () => {
     try {
-      await axios.get(
-        "http://localhost:5000/admin/get-sent-newsletter"
-      )
-      .then((res) =>{
-        setSubscribers(res.data);
-      })
-      
+      await axios
+        .get("http://localhost:5000/admin/get-sent-newsletter")
+        .then((res) => {
+          setSubscribers(res.data);
+        });
     } catch (err) {
       Swal.fire({
         title: "Error",
@@ -28,46 +26,34 @@ function AdminNewsletter() {
     fetchSentMessages();
   }, []);
 
-
   return (
     <section className="bg-slate-300 flex justify-center items-center">
       <div className="h-[80%] w-[80%] bg-white shadow-xl p-2 flex">
-      <AdminSidebar userName={"Admin"} />
-      <div className=" w-[70%] ms-24 p-4 flex flex-col justify-start gap-5 ">
-          <p className="font-semibold text-3xl">Subscriber</p>
+        <AdminSidebar userName={"Admin"} />
+        <div className=" w-[70%] ms-24 p-4 flex flex-col justify-start gap-5 ">
+          <p className="font-semibold text-3xl">Subscribers Mail</p>
           <div className="w-full">
             <div className="relative overflow-auto shadow-md sm:rounded-lg">
-              <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <table className="w-full text-sm text-left text-gray-500">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3">
-                      #
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Subscriber's Email
-                    </th>
+                    <th className="px-6 py-3 border-b">#</th>
+                    <th className="px-6 py-3 border-b">Subscriber's Email</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {subscribers.map((email , index) =>{
-                    return(
+                  {subscribers.map((email, index) => {
+                    return (
                       <tr key={index} className="text-black">
-                        <td scope="col" className="px-6 py-3">
-                          {index + 1}
-                        </td>
-                        <td scope="col" className="px-6 py-3">
-                          {email.email}
-                        </td>
-
-                        
+                        <td className="px-6 py-3">{index + 1}</td>
+                        <td className="px-6 py-3">{email.email}</td>
                       </tr>
-                    )
+                    );
                   })}
                 </tbody>
               </table>
             </div>
           </div>
-    
         </div>
       </div>
     </section>

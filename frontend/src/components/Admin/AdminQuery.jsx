@@ -21,7 +21,6 @@ function AdminQuery() {
         });
       }
     };
-
     fetchData();
   }, []);
 
@@ -29,63 +28,40 @@ function AdminQuery() {
     return <Loader />;
   }
 
-
   return (
     <section className="bg-slate-300 flex justify-center items-center">
       <div className="h-[80%] w-[80%] bg-white shadow-xl p-2 flex">
-      <AdminSidebar userName={"Admin"}/>
+        <AdminSidebar userName={"Admin"} />
         <div className=" w-[70%] ms-24 p-4 flex flex-col justify-start gap-5 ">
-          <p className="font-semibold text-3xl">Patient</p>
+          <p className="font-semibold text-3xl">User Queries</p>
           <div className="w-full">
             <div className="relative overflow-auto shadow-md sm:rounded-lg">
-              <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <table className="w-full text-sm text-left text-gray-500">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3">
-                      #
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Patient Name
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Patient Email
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Message
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Phone No
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Action
-                    </th>
+                    <th className="px-6 py-3 border-b">#</th>
+                    <th className="px-6 py-3 border-b">Patient Name</th>
+                    <th className="px-6 py-3 border-b">Patient Email</th>
+                    <th className="px-6 py-3 border-b">Message</th>
+                    <th className="px-6 py-3 border-b">Phone No</th>
+                    <th className="px-6 py-3 border-b">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {contacts &&
                     contacts.map((item, index) => (
-                      <tr key={item._id} className="text-black">
-                        <td scope="col" className="px-3 py-4">
-                          {index + 1}
-                        </td>
-                        <td scope="col" className="px-6 py-3">
-                          {item.name}
-                        </td>
-                        <td scope="col" className="px-6 py-3">
-                          {item.email}
-                        </td>
-                        <td scope="col" className="px-6 py-3">
-                          {item.message}
-                        </td>
-                        <td scope="col" className="px-6 py-3">
-                          {item.phone}
-                        </td>
-                        <td scope="col" className="d-flex gap-3 ">
+                      <tr key={item._id} className="text-black border-b">
+                        <td className="px-3 py-4">{index + 1}</td>
+                        <td className="px-6 py-3">{item.name}</td>
+                        <td className="px-6 py-3">{item.email}</td>
+                        <td className="px-6 py-3">{item.message}</td>
+                        <td className="px-6 py-3">{item.phone}</td>
+                        <td className="px-6 py-3">
                           <button
                             onClick={() => {
                               deletePatient(item._id);
                             }}
-                            className="btn btn-danger"
+                            className="bg-black text-white px-4 py-1 rounded hover:bg-red-700 transition duration-200"
                           >
                             Remove
                           </button>

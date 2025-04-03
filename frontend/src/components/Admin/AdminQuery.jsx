@@ -5,7 +5,6 @@ import AdminSidebar from "./AdminSidebar";
 
 function AdminQuery() {
   const [contacts, setContacts] = useState([]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {

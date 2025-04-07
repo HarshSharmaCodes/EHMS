@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-
 const medicationSchema = new Schema({
   name: {
     type: String,
@@ -46,7 +45,7 @@ const userSchema = new Schema({
       },
       role: {
         type: String,
-        enum: ["admin", "doctor", "nurse", "receptionist", "patient"],
+        enum: ["admin", "doctor", "patient"],
         default: "patient",
       },
       phoneNumber: {
@@ -75,20 +74,6 @@ const userSchema = new Schema({
           default: "",
         },
         zipCode: {
-          type: String,
-          default: "",
-        },
-      },
-      emergencyContact: {
-        name: {
-          type: String,
-          default: "",
-        },
-        relationship: {
-          type: String,
-          default: "",
-        },
-        phoneNumber: {
           type: String,
           default: "",
         },

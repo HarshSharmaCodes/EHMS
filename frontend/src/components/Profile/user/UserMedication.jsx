@@ -1,47 +1,48 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import profilePic from '../../../assets/User.jpg';
-import UserSidebar from './UserSidebar';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import profilePic from "../../../assets/User.jpg";
+import UserSidebar from "./UserSidebar";
 
 function UserMedication() {
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const [medicines, setMedicines] = useState([]);
 
-    const userData = JSON.parse(localStorage.getItem('user'))
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/user/get-medications/${userData.email}`
+        );
 
+        const data = response.data;
+        const medicationsArray = data.map(({ medications }) => medications);
+        const detailsArray = medicationsArray.map((medications) =>
+          medications.map(({ name, dosage, frequency }) => ({
+            name,
+            dosage,
+            frequency,
+          }))
+        );
+        setMedicines(detailsArray);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
 
-    const [medicines , setMedicines] = useState([]);
-
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get(`http://localhost:5000/user/get-medications/${userData.email}`);
-           
-          const data = response.data;
-          const medicationsArray = data.map(({ medications }) => medications);
-
-  
-          const detailsArray = medicationsArray.map(medications => medications.map(({ name, dosage, frequency }) => ({name , dosage, frequency })));
-
-
-          setMedicines(detailsArray);
-          
-        } catch (error) {
-          console.error('Error fetching users:', error);
-  
-        }
-      };
-    
-      fetchData();
-    
-    }, []); 
+    fetchData();
+  }, []);
 
   return (
-    <section className='bg-slate-300 flex justify-center items-center'>
-        <div className='h-[80%] w-[80%] bg-white shadow-xl p-2 flex'>
+    <section className="bg-slate-300 flex justify-center items-center">
+      <div className="h-[80%] w-[80%] bg-white shadow-xl p-2 flex">
         <UserSidebar profilePic={profilePic} userName={userData.userName} />
         <div className=" w-[70%] ms-24 p-4 flex flex-col justify-start gap-5 ">
           <p className="font-semibold text-3xl">Medications</p>
           <div className="w-full">
-            {!medicines? <p>Medications are not prescribed</p>:  <div className="relative overflow-auto shadow-md sm:rounded-lg">
+            {!medicines ? (
+              <p>Medications are not prescribed</p>
+            ) : (
+              <div className="relative overflow-auto shadow-md sm:rounded-lg">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
@@ -60,11 +61,11 @@ function UserMedication() {
                     </tr>
                   </thead>
                   <tbody>
-                    {medicines.map((value , index) =>{
-                      return(
+                    {medicines.map((value, index) => {
+                      return (
                         <tr key={index}>
                           <td scope="col" className="px-6 py-3">
-                            {index+1}
+                            {index + 1}
                           </td>
                           <td scope="col" className="px-6 py-3">
                             {value[0].name}
@@ -76,18 +77,17 @@ function UserMedication() {
                             {value[0].frequency}
                           </td>
                         </tr>
-                      )
+                      );
                     })}
                   </tbody>
                 </table>
-              </div> }
+              </div>
+            )}
           </div>
-  
         </div>
-        </div>
-        
+      </div>
     </section>
-  )
+  );
 }
 
-export default UserMedication
+export default UserMedication;

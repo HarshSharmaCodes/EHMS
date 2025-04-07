@@ -5,7 +5,7 @@ import profilePic from "../../../assets/User.jpg";
 import UserSidebar from "./UserSidebar";
 
 function UserBookAppointment() {
-  const [userData, setuserData] = useState([]);
+  const [userData, setuserData] = useState({});
   const [userName, setName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [address, setAddress] = useState("");
@@ -15,30 +15,10 @@ function UserBookAppointment() {
   const [gender, setGender] = useState("");
   const [email, setEmail] = useState("");
   const [time, setTime] = useState("");
+  const [availableTimings, setAvailableTimings] = useState([]);
   const [doctors, setDoctors] = useState([]);
-
-  const handleTimeChange = (e) => {
-    const selectedTime = e.target.value;
-    const [hours, minutes] = selectedTime.split(":").map(Number);
-
-    // Convert selected time into minutes for easy comparison
-    const selectedMinutes = hours * 60 + minutes;
-
-    // Allowed range (in minutes)
-    const minTime = 11 * 60 + 30; // 11:30 AM
-    const maxTime = 17 * 60; // 5:00 PM
-
-    if (selectedMinutes >= minTime && selectedMinutes <= maxTime) {
-      setTime(selectedTime);
-    } else {
-      Swal.fire({
-        title: "Invalid Time",
-        text: "Appointments can only be booked between 11:30 AM and 5:00 PM.",
-        icon: "warning",
-        confirmButtonText: "OK",
-      });
-    }
-  };
+  const [specialization, setSpecialization] = useState("");
+  const [specializations, setSpecializations] = useState([]);
 
   const getDay = () => {
     const today = new Date();
@@ -46,29 +26,52 @@ function UserBookAppointment() {
   };
 
   useEffect(() => {
-    const fetchInfo = async (e) => {
+    const fetchUser = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
       setuserData(user);
       setName(user.userName);
       setMobileNumber(user.phoneNumber);
-      setAddress(user.address.street);
+      setAddress(user.address?.street || "");
       setGender(user.gender);
       setEmail(user.email);
     };
 
-    const fetchDoctors = async (e) => {
+    const fetchDoctors = async () => {
       const res = await axios.get("http://localhost:5000/doctor/get-doctors");
       setDoctors(res.data);
+      const specs = [...new Set(res.data.map((doc) => doc.specialization))];
+      setSpecializations(specs);
     };
 
+    fetchUser();
     fetchDoctors();
-    fetchInfo();
   }, []);
+
+  const handleDoctorChange = async (doctorId) => {
+    setDoctor(doctorId);
+    setTime(""); // Reset time
+    try {
+      const res = await axios.get(`http://localhost:5000/doctor/get-timings/${doctorId}`);
+      setAvailableTimings(res.data.timings || []);
+    } catch (err) {
+      console.error("Failed to fetch timings", err);
+      setAvailableTimings([]);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios
-      .post("http://localhost:5000/appointment/add-appointment", {
+    if (!doctor || !appointmentDate || !time || !reason) {
+      Swal.fire({
+        title: "Missing Fields",
+        text: "Please fill all required fields before submitting.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    try {
+      await axios.post("http://localhost:5000/appointment/add-appointment", {
         patient: userData.userName,
         phone: mobileNumber,
         doctor: doctor,
@@ -76,126 +79,115 @@ function UserBookAppointment() {
         reason: reason,
         email: email,
         time: time,
-      })
-      .then((res) => {
-        Swal.fire({
-          title: "Success",
-          icon: "success",
-          confirmButtonText: "Ok",
-          text: "Appointment Request Sent Successfully! We will get back to you soon!",
-        });
-      })
-      .catch((err) => {
-        Swal.fire({
-          title: "Error",
-          icon: "error",
-          confirmButtonText: "Ok",
-          text: "Error Sending Appointment Request! Please Try Again!",
-        });
       });
+      Swal.fire({
+        title: "Success",
+        icon: "success",
+        text: "Appointment request sent successfully!",
+      });
+    } catch (err) {
+      Swal.fire({
+        title: "Error",
+        icon: "error",
+        text: "Could not send appointment request.",
+      });
+    }
   };
+
+  const filteredDoctors = doctors.filter(
+    (doc) => doc.specialization === specialization
+  );
 
   return (
     <section className="bg-slate-300 flex justify-center items-center">
       <div className="h-[80%] w-[80%] bg-white shadow-xl p-2 flex">
         <UserSidebar profilePic={profilePic} userName={userData.userName} />
-        <div className=" w-[70%] ms-24 p-4 flex flex-col justify-around ">
+        <div className="w-[70%] ms-24 p-4 flex flex-col justify-around">
           <p className="font-semibold text-3xl">Book Appointment</p>
-          <form action="" className="flex flex-col h-[80%] justify-between">
+          <form className="flex flex-col h-[80%] justify-between" onSubmit={handleSubmit}>
             <div className="w-full flex justify-between">
-              <div className="flex flex-col w-[50%] justify-start">
-                <p>Name:</p>
-                <input
-                  value={userData.userName || ""}
-                  disabled
-                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                  type="text"
-                />
-              </div>
-              <div className="flex flex-col w-[50%] justify-start">
-                <p>Email:</p>
-                <input
-                  value={userData.email || ""}
-                  disabled
-                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                  type="email"
-                ></input>
-              </div>
-            </div>
-            <div className="w-full flex justify-between">
-              <div className="flex flex-col w-[50%] justify-start">
-                <p>Phone Number:</p>
-                <input
-                  value={userData.phoneNumber || ""}
-                  disabled
-                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                  type="text"
-                ></input>
-              </div>
-              <div className="flex flex-col w-[50%] justify-start">
+              <div className="flex flex-col w-[50%]">
                 <p>Appointment Date:</p>
                 <input
                   value={appointmentDate}
                   onChange={(e) => setAppointmentDate(e.target.value)}
-                  className="flex h-10  w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="h-10 w-[90%] rounded-md border px-3 py-2 text-sm"
                   type="date"
                   min={getDay()}
-                  placeholder="Date Of Appointment"
-                ></input>
+                />
               </div>
             </div>
 
             <div className="w-full flex justify-between">
-              <div className="flex flex-col w-[50%] justify-start">
-                <p>Gender:</p>
-                <input
-                  value={userData.gender || ""}
-                  disabled
-                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                  type="text"
-                ></input>
-              </div>
-              <div className="flex flex-col w-[50%] justify-start">
-                <p>Choose Your Doctor:</p>
+              <div className="flex flex-col w-[50%]">
+                <p>Select Specialization:</p>
                 <select
-                  value={doctor}
-                  onChange={(e) => setDoctor(e.target.value)}
-                  id="doctors"
-                  className="flex h-10 w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={specialization}
+                  onChange={(e) => {
+                    setSpecialization(e.target.value);
+                    setDoctor("");
+                    setAvailableTimings([]);
+                  }}
+                  className="h-10 w-[90%] rounded-md border px-3 py-2 text-sm"
                 >
-                  <option value="Choose your Doctor">Choose you Doctor</option>
-                  {doctors.map((doctors) => (
-                    <option key={doctors._id} value={doctors._id}>
-                      {doctors.name}
+                  <option value="">Select Specialization</option>
+                  {specializations.map((spec, idx) => (
+                    <option key={idx} value={spec}>
+                      {spec}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
+
             <div className="w-full flex justify-between">
-              <div className="flex flex-col w-[50%] justify-start">
-                <p>Enter Reason:</p>
+              <div className="flex flex-col w-[50%]">
+                <p>Choose Doctor:</p>
+                <select
+                  value={doctor}
+                  onChange={(e) => handleDoctorChange(e.target.value)}
+                  className="h-10 w-[90%] rounded-md border px-3 py-2 text-sm"
+                >
+                  <option value="">Select Doctor</option>
+                  {filteredDoctors.map((doc) => (
+                    <option key={doc._id} value={doc._id}>
+                      {doc.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="w-full flex justify-between">
+              <div className="flex flex-col w-[50%]">
+                <p>Reason:</p>
                 <input
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  className="flex h-10 w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="h-10 w-[90%] rounded-md border px-3 py-2 text-sm"
                   type="text"
                   placeholder="Reason"
-                ></input>
-              </div>
-              <div className="flex flex-col w-[50%] justify-start">
-                <p>Enter Appointment Time:</p>
-                <input
-                  value={time}
-                  onChange={handleTimeChange}
-                  className="flex h-10  w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                  type="time"
-                  placeholder="Time"
                 />
               </div>
+              <div className="flex flex-col w-[50%]">
+                <p>Appointment Time:</p>
+                <select
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="h-10 w-[90%] rounded-md border px-3 py-2 text-sm"
+                >
+                  <option value="">Select Time</option>
+                  {availableTimings.map((t, idx) => (
+                    <option key={idx} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
             <button
-              onClick={handleSubmit}
+              type="submit"
               className="bg-black w-[95%] text-white p-2 rounded-full"
             >
               Book Now

@@ -6,19 +6,18 @@ import AdminSidebar from "./AdminSidebar";
 
 function AdminDashboard() {
   const [docount, setDocount] = useState(0);
-  const [nursecount, setNursecount] = useState(0);
   const [patientcount, setPatientcount] = useState(0);
   const [querieslef, setQuerieslef] = useState(0);
-  const [depts, setDepts] = useState(0);
+  const [news, setNews] = useState(0);
+  const [] = useState(0);
 
   const fetchInfo = async () => {
     try {
       const res = await axios.get("http://localhost:5000/admin/get-count");
       setDocount(res.data.doccou);
-      setNursecount(res.data.nursecou);
       setPatientcount(res.data.patientcou);
       setQuerieslef(res.data.queriescou);
-      setDepts(res.data.deptcou);
+      setNews(res.data.newcou);
     } catch (err) {
       Swal.fire({
         title: "Error",
@@ -30,7 +29,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     fetchInfo();
-  }, []); 
+  }, []);
 
   return (
     <section className="bg-slate-300 flex justify-center items-center">
@@ -41,22 +40,25 @@ function AdminDashboard() {
           <div className="w-full h-[80%] items-center flex flex-col gap-4">
             <div className="flex w-full justify-evenly h-[30%]">
               <div className="flex shadow-xl rounded-xl border-2 border-slate-900 w-[30%] justify-center items-center">
-                <span className="font-semibold text-xl">Doctors: {docount}</span>
-              </div>
-              <div className="flex shadow-xl rounded-xl border-2 border-slate-900 w-[30%] justify-center items-center">
-                <span className="font-semibold text-xl">Nurses: {nursecount}</span>
+                <span className="font-semibold text-xl">
+                  Doctors: {docount}
+                </span>
               </div>
             </div>
             <div className="flex w-full justify-evenly h-[30%]">
               <div className="flex shadow-xl rounded-xl border-2 border-slate-900 w-[30%] justify-center items-center">
-                <span className="font-semibold text-xl">Patients: {patientcount}</span>
+                <span className="font-semibold text-xl">
+                  Patients: {patientcount}
+                </span>
               </div>
               <div className="flex shadow-xl rounded-xl border-2 border-slate-900 w-[30%] justify-center items-center">
-                <span className="font-semibold text-xl">Query: {querieslef}</span>
+                <span className="font-semibold text-xl">
+                  Query: {querieslef}
+                </span>
               </div>
             </div>
             <div className="flex shadow-xl rounded-xl border-2 border-slate-900 w-[30%] h-[30%] justify-center items-center">
-              <span className="font-semibold text-xl">Departments: {depts}</span>
+              <span className="font-semibold text-xl">Newsletter: {news}</span>
             </div>
           </div>
         </div>

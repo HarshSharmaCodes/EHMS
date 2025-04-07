@@ -6,7 +6,6 @@ const cookieParser = require("cookie-parser");
 const User = require("../models/user.js");
 const config = require("config");
 const Doctor = require("../models/doctor.js");
-const Nurse = require("../models/nurse.js");
 require("dotenv/config");
   router.post("/register", async (req, res) => {
     const { userName, email, password } = req.body;
@@ -45,9 +44,8 @@ require("dotenv/config");
   
       user = await User.findOne({ email });
       doctor = await Doctor.findOne({ email });
-      nurse = await Nurse.findOne({ email });
   
-      if (user || doctor || nurse) {
+      if (user || doctor) {
         if (user) {
           isPasswordValid = await bcrypt.compare(password, user.password);
         } else if (doctor) {
@@ -70,12 +68,6 @@ require("dotenv/config");
             });
             role = doctor.role;
             loggedInUser = doctor;
-          } else if (nurse) {
-            token = jwt.sign({ id: nurse._id, role: nurse.role }, process.env.JWT_SECRET, {
-              expiresIn: "2d",
-            });
-            role = nurse.role;
-            loggedInUser = nurse;
           }
           res.cookie('token', token);
           res.json({ status: "Success", token, role, user: loggedInUser });

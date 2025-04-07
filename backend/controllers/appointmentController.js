@@ -17,6 +17,28 @@ router.get("/get-appointments/:email", async (req, res) => {
   }
 });
 
+router.put("/update-status/:id", async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedAppointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    res.status(200).json(updatedAppointment);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 router.get("/get-appointment/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -32,6 +54,28 @@ router.get("/get-appointment/:id", async (req, res) => {
   }
 });
 
+router.get("/patients/:doctorId", async (req, res) => {
+  const doctorId = req.params.doctorId;
+
+  try {
+    const appointments = await Appointment.find({ doctor: doctorId });
+
+    const uniquePatientEmails = [...new Set(appointments.map((appt) => appt.email))];
+
+    const uniquePatients = uniquePatientEmails.map((email) => {
+      const patientInfo = appointments.find((appt) => appt.email === email);
+      return {
+        name: patientInfo.patient,
+        email: patientInfo.email,
+        phone: patientInfo.phone,
+      };
+    });
+
+    res.json(uniquePatients);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching patients" });
+  }
+});
 
 router.post("/add-appointment", async (req, res) => {
   const { doctor, patient, appointmentDate, reason, phone, email, time } = req.body;

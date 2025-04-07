@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Swal from "sweetalert2";
+import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import {
   login,
   loginFailure,
   loginProgress,
   loginSuccess,
 } from "../../redux/UserSlice.js";
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { Link } from "react-router-dom";
 
 function SignIn() {
   const [data, setData] = React.useState({
@@ -49,7 +48,7 @@ function SignIn() {
           localStorage.setItem("user", JSON.stringify(user));
           navigate("/admin-dashboard");
           dispatch(loginSuccess());
-        } else if (res.data.role === "doctor" || res.data.role === "nurse") {
+        } else if (res.data.role === "doctor") {
           dispatch(loginFailure());
           Swal.fire({
             title: "Invalid Role!",
@@ -80,10 +79,6 @@ function SignIn() {
 
   const handleDoctor = () => {
     navigate("/doctor-sign-in");
-  };
-
-  const handleNurse = () => {
-    navigate("/nurse-sign-in");
   };
 
   const handleVisible = () => {
@@ -197,13 +192,6 @@ function SignIn() {
               onClick={handleDoctor}
             >
               SignIn As Doctor
-            </button>
-            <button
-              type="button"
-              className="relative inline-flex w-full items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
-              onClick={handleNurse}
-            >
-              SignIn As Nurse
             </button>
           </div>
         </div>

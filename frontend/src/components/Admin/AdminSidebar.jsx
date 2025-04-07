@@ -1,6 +1,6 @@
 import axios from "axios";
 import React from "react";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { NavLink } from "react-router-dom";
 import adminProfile from "../../assets/Admin-Profile.png";
 import { logout } from "../../redux/UserSlice.js";
@@ -51,13 +51,6 @@ const AdminSidebar = ({ profilePic, userName }) => {
             to="/admin-doctor"
           >
             Doctor
-          </NavLink>
-          <NavLink
-            style={navLinkStyle}
-            className={"w-full p-2 h-[40px] "}
-            to="/admin-nurse"
-          >
-            Nurse
           </NavLink>
           <NavLink
             style={navLinkStyle}

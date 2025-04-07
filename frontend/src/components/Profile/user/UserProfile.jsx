@@ -69,8 +69,7 @@ function UserProfile() {
     }
 
     const tenYearsAgo = new Date();
-    tenYearsAgo.setFullYear(tenYearsAgo.getFullYear() - 10); // Set date to 10 years ago
-
+    tenYearsAgo.setFullYear(tenYearsAgo.getFullYear() - 10);
     if (new Date(dateOfBirth) > tenYearsAgo) {
       return Swal.fire({
         title: "Invalid Date of Birth",
@@ -130,21 +129,19 @@ function UserProfile() {
               <div className="flex flex-col w-[50%] justify-start">
                 <p>Enter Your Name:</p>
                 <input
-                  value={userName}
-                  onChange={(e) => setName(e.target.value)}
-                  className="flex h-10 w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={userData.userName || ""}
+                  disabled
+                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   type="text"
-                  placeholder="Name"
                 />
               </div>
               <div className="flex flex-col w-[50%] justify-start">
                 <p>Enter Your Email:</p>
                 <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex h-10  w-[90%] rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={userData.email || ""}
+                  disabled
+                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   type="email"
-                  placeholder="Email"
                 />
               </div>
             </div>

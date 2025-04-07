@@ -5,29 +5,29 @@ import profilePic from "../../../assets/Doctor.png";
 import DoctorSidebar from "./DoctorSidebar";
 
 function DoctorProfile() {
-  const [userData, setuserData] = useState([]);
+  const [userData, setUserData] = useState({});
   const [name, setName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState("");
   const [email, setEmail] = useState("");
 
   useEffect(() => {
     const fetchInfo = async () => {
-      const user = JSON.parse(localStorage.getItem("user"));
+      const user = localStorage.getItem("user");
       if (user) {
-        setuserData(user);
-        setName(user.name || "");
-        setMobileNumber(user.phoneno || "");
-        setAddress(user.address?.street || "");
-        setCity(user.address?.city || "");
-        setState(user.address?.state || "");
-        setDateOfBirth(user.dob?.split("T")[0] || "");
-        setGender(user.gender || "");
-        setEmail(user.email || "");
+        try {
+          const parsedUser = JSON.parse(user);
+          setUserData(parsedUser);
+          setName(parsedUser.name || "");
+          setMobileNumber(parsedUser.phoneno || "");
+          setDateOfBirth(parsedUser.dob?.split("T")[0] || "");
+          setGender(parsedUser.gender || "");
+          setEmail(parsedUser.email || "");
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+          localStorage.removeItem("user");
+        }
       }
     };
 
@@ -35,17 +35,7 @@ function DoctorProfile() {
   }, []);
 
   const validateInputs = () => {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const phonePattern = /^[0-9]{10}$/;
-
-    if (!emailPattern.test(email)) {
-      Swal.fire(
-        "Invalid Email",
-        "Please enter a valid email address.",
-        "error"
-      );
-      return false;
-    }
 
     if (!phonePattern.test(mobileNumber)) {
       Swal.fire(
@@ -58,8 +48,17 @@ function DoctorProfile() {
 
     const birthDate = new Date(dateOfBirth);
     const today = new Date();
-    const age = today.getFullYear() - birthDate.getFullYear();
 
+    if (birthDate > today) {
+      Swal.fire(
+        "Invalid DOB",
+        "Date of birth cannot be in the future.",
+        "error"
+      );
+      return false;
+    }
+
+    const age = today.getFullYear() - birthDate.getFullYear();
     if (age < 15) {
       Swal.fire("Invalid DOB", "Age must be at least 15 years old.", "error");
       return false;
@@ -71,6 +70,12 @@ function DoctorProfile() {
     e.preventDefault();
 
     if (!validateInputs()) return;
+
+    if (!userData._id) {
+      Swal.fire("Error", "User ID is missing. Please log in again.", "error");
+      return;
+    }
+
     try {
       const res = await axios.put(
         "http://localhost:5000/doctor/profile-update",
@@ -80,16 +85,12 @@ function DoctorProfile() {
             email,
             name,
             phoneno: mobileNumber,
-            address: {
-              street: address,
-              city,
-              state,
-            },
             gender,
             dob: dateOfBirth,
           },
         }
       );
+
       if (res.data.status === "Success") {
         Swal.fire({
           title: "Success",
@@ -99,8 +100,12 @@ function DoctorProfile() {
           allowOutsideClick: false,
         }).then(() => {
           localStorage.setItem("user", JSON.stringify(res.data.user));
-          setuserData(res.data.user);
-          window.location.reload();
+          setUserData(res.data.user);
+          setName(res.data.user.name);
+          setMobileNumber(res.data.user.phoneno);
+          setDateOfBirth(res.data.user.dob?.split("T")[0] || "");
+          setGender(res.data.user.gender);
+          setEmail(res.data.user.email);
         });
       }
     } catch (err) {
@@ -126,23 +131,21 @@ function DoctorProfile() {
           >
             <div className="w-full flex justify-between">
               <div className="flex flex-col w-[50%]">
-                <p>Enter Your Name:</p>
+                <p>Name:</p>
                 <input
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="h-10 w-[90%] rounded-md border px-3 py-2"
+                  disabled
+                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   type="text"
-                  placeholder="Name"
                 />
               </div>
               <div className="flex flex-col w-[50%]">
-                <p>Enter Your Email:</p>
+                <p>Email:</p>
                 <input
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-10 w-[90%] rounded-md border px-3 py-2"
+                  disabled
+                  className="h-10 w-[90%] rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   type="email"
-                  placeholder="Email"
                 />
               </div>
             </div>
@@ -167,7 +170,6 @@ function DoctorProfile() {
                 />
               </div>
             </div>
-
             <div className="w-full flex justify-between">
               <div className="flex flex-col w-[50%]">
                 <p>Select Your Gender:</p>
@@ -181,38 +183,6 @@ function DoctorProfile() {
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
                 </select>
-              </div>
-              <div className="flex flex-col w-[50%]">
-                <p>Enter Your City:</p>
-                <input
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="h-10 w-[90%] rounded-md border px-3 py-2"
-                  type="text"
-                  placeholder="City"
-                />
-              </div>
-            </div>
-            <div className="w-full flex justify-between">
-              <div className="flex flex-col w-[50%]">
-                <p>Enter Your State:</p>
-                <input
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
-                  className="h-10 w-[90%] rounded-md border px-3 py-2"
-                  type="text"
-                  placeholder="State"
-                />
-              </div>
-              <div className="flex flex-col w-[50%]">
-                <p>Enter Your Address:</p>
-                <input
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className="h-10 w-[90%] rounded-md border px-3 py-2"
-                  type="text"
-                  placeholder="Address"
-                />
               </div>
             </div>
             <button

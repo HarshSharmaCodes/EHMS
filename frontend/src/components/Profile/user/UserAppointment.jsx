@@ -9,17 +9,19 @@ function UserAppointment() {
   const [userData, setUserData] = useState({});
 
   const colorForStatus = (status) => {
-    switch (status) {
+    const normalizedStatus = status.toLowerCase().replace(/\s+/g, "");
+
+    switch (normalizedStatus) {
       case "scheduled":
-        return "text-orange-300";
-      case "inProgress":
-        return "text-blue-300";
+        return "text-orange-500";
+      case "inprogress":
+        return "text-blue-500";
       case "completed":
-        return "text-green-300";
+        return "text-green-500";
       case "cancelled":
-        return "text-red-300";
+        return "text-red-500";
       default:
-        return "text-gray-300";
+        return "text-gray-400";
     }
   };
 
@@ -69,33 +71,23 @@ function UserAppointment() {
         {/* Main Content */}
         <div className="flex flex-col gap-4 p-4 w-full overflow-hidden">
           <h1 className="text-3xl font-medium">Appointments</h1>
-
           <div className="flex flex-col gap-4 overflow-y-auto max-h-[60vh] pr-2">
             {appointments.length > 0 ? (
               appointments.map((appointment) => {
-                const appointmentDate = new Date(appointment.appointmentDate);
-                const formattedDate = appointmentDate.toLocaleDateString(
-                  "en-US",
-                  {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
+                let formattedDate = "Invalid date";
+                if (appointment.appointmentDate) {
+                  const parsedDate = new Date(appointment.appointmentDate);
+                  if (!isNaN(parsedDate.getTime())) {
+                    formattedDate = parsedDate.toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    });
                   }
-                );
+                }
 
-                const formattedTime = appointment.time
-                  ? new Date(
-                      0,
-                      0,
-                      0,
-                      ...appointment.time.split(":").map(Number)
-                    ).toLocaleTimeString("en-US", {
-                      hour: "numeric",
-                      minute: "2-digit",
-                      hour12: true,
-                    })
-                  : "Time not provided";
+                const formattedTime = appointment.time || "Time not provided";
 
                 return (
                   <div

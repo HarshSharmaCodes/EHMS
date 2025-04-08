@@ -4,7 +4,6 @@ const checkAdmin = require("../middlewares/checkAdmin");
 
 const Doctor = require("../models/doctor");
 const User = require("../models/user");
-// const Department = require("../models/department");
 const ContactUs = require("../models/contactUs");
 const newsLetter = require("../models/newsLetter");
 

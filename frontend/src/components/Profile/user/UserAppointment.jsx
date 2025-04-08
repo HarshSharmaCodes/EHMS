@@ -60,8 +60,8 @@ function UserAppointment() {
   }, []);
 
   return (
-    <section className="flex items-center justify-center bg-slate-300 min-h-screen">
-      <div className="flex h-[80vh] w-[80%] bg-white p-2 shadow-xl overflow-hidden">
+    <section className="bg-slate-300 flex justify-center items-center">
+      <div className="h-[80%] w-[80%] bg-white shadow-xl p-2 flex">
         {/* Sidebar */}
         <UserSidebar
           profilePic={profilePic}
@@ -69,7 +69,7 @@ function UserAppointment() {
         />
 
         {/* Main Content */}
-        <div className="flex flex-col gap-4 p-4 w-full overflow-hidden">
+        <div className="w-[70%] ms-24 p-4 flex flex-col justify-start gap-5">
           <h1 className="text-3xl font-medium">Appointments</h1>
           <div className="flex flex-col gap-4 overflow-y-auto max-h-[60vh] pr-2">
             {appointments.length > 0 ? (

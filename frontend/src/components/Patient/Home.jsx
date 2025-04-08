@@ -18,24 +18,28 @@ function Home() {
   const [email, setEmail] = useState("");
   const handleNewsletter = async (e) => {
     e.preventDefault();
-    await axios
-      .post("http://localhost:5000/admin/new-letter", { email })
-      .then(() => {
-        Swal.fire({
-          title: "Success",
-          icon: "success",
-          confirmButtonText: "OK",
-          text: "Thanks For Subscribing The Newletter!",
-        });
-      })
-      .catch(() => {
-        Swal.fire({
-          title: "Error",
-          icon: "error",
-          confirmButtonText: "OK",
-          text: "Failed!",
-        });
+    if (!email) {
+      return Swal.fire({
+        title: "Email Required",
+        icon: "warning",
+        text: "Please enter your email before subscribing.",
       });
+    }
+    try {
+      await axios.post("http://localhost:5000/admin/new-letter", { email });
+      Swal.fire({
+        title: "Success",
+        icon: "success",
+        text: "Thanks for subscribing to the newsletter!",
+      });
+      setEmail("");
+    } catch (err) {
+      Swal.fire({
+        title: "Error",
+        icon: "error",
+        text: "Subscription failed. Please try again later.",
+      });
+    }
   };
 
   return (
@@ -226,7 +230,7 @@ function Home() {
             className="flex items-center gap-4 "
           >
             <img className="h-[300px] hidden md:block" src={feedback} alt="" />
-            <div className="flex flex-col items-start py-5 p-5 w-[450px] shadow-xl bg-[#f9c8ff] shadow-violet-400 rounded-lg">
+            <div className="flex flex-col items-start py-5 p-5 w-[450px] shadow-2xl bg-[#d1ffe9] rounded-lg">
               <div className="flex justify-center items-center">
                 <img
                   src={review}

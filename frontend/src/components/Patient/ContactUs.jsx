@@ -17,6 +17,7 @@ function ContactUs() {
     setPhoneNo("");
     setComment("");
   };
+
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.3,
@@ -35,6 +36,7 @@ function ContactUs() {
         title: "Success",
         icon: "success",
         confirmButtonText: "Ok",
+        confirmButtonColor: "#8febbf",
         text: "Message Sent Successfully! We will get back to you soon!",
       });
       resetForm();
@@ -43,6 +45,7 @@ function ContactUs() {
         title: "Error",
         icon: "error",
         confirmButtonText: "Ok",
+        confirmButtonColor: "#dc3545",
         text: "Error Sending Message! Please Try Again!",
       });
     }
@@ -59,16 +62,13 @@ function ContactUs() {
         whileInView={{ opacity: 1 }}
         className="h-screen w-screen flex justify-center items-center pt-24"
       >
-        <div className="flex gap-10 mx-14 py-14">
+        <div className="flex flex-wrap gap-10 mx-4 md:mx-14 py-14">
           <div className="flex-col hidden md:flex">
             <span className="text-zinc-650 text-4xl">Locate Us</span>
             <br />
-            <span className="text-zinc-550 text-2xl">
-              EHM Delhi - India
-            </span>
+            <span className="text-zinc-550 text-2xl">EHM Delhi - India</span>
             <span className="text-zinc-500 text-base">
-              EHM, RandomAddress, ExampleBlah, Rohini – XXXXXX, Delhi,
-              India
+              EHM, RandomAddress, ExampleBlah, Rohini – XXXXXX, Delhi, India
             </span>
             <br />
             <div className="flex gap-20 items-start">
@@ -105,35 +105,43 @@ function ContactUs() {
             animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : 50 }}
             transition={{ duration: 1.5 }}
             whileInView={{ opacity: 1 }}
-            className="flex flex-col w-[500px] h-4/5 p-4 justify-center items-center bg-[#FFFFFF] gap-10 border border-black broder-2 rounded-lg border-transparent shadow-xl shadow-slate-950"
+            className="flex flex-col w-[500px] h-4/5 p-4 justify-center items-center bg-[#FFFFFF] gap-10 border border-black border-2 rounded-lg border-transparent shadow-xl shadow-slate-950"
           >
             <span className="text-zinc-650 text-3xl font-medium">
               Get in touch
             </span>
             <input
-              className="flex h-10 w-2/3 rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1"
               type="text"
               placeholder="Name *"
-              onChange={(e) => setName(e.target.value)}
             />
             <input
-              className="flex h-10 w-2/3 rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-              type="number"
-              placeholder="Phone / Mobile *"
+              required
+              value={phone}
               onChange={(e) => setPhoneNo(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1"
+              type="tel"
+              placeholder="Phone / Mobile *"
             />
             <input
-              className="flex h-10 w-2/3 rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1"
               type="email"
               placeholder="Email Address *"
-              onChange={(e) => setEmail(e.target.value)}
             />
             <textarea
+              required
+              value={message}
+              onChange={(e) => setComment(e.target.value)}
               id="message"
               rows="4"
-              className="flex h-30 w-2/3 rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-30 resize-none w-full rounded-md border border-black/30 bg-transparent px-3 py-2 text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-black/30 focus:ring-offset-1"
               placeholder="Message *"
-              onChange={(e) => setComment(e.target.value)}
             ></textarea>
             <button
               onClick={handleSubmit}

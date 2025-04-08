@@ -114,7 +114,7 @@ function DoctorReview() {
                     value={dosage}
                     onChange={(e) => setDosage(e.target.value)}
                     type="text"
-                    placeholder="(Ml, Tablets)"
+                    placeholder="Tablets"
                     className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                   />
                 </div>

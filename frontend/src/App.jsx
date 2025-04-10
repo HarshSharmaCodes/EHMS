@@ -5,7 +5,6 @@ import AdminDoctor from "./components/Admin/AdminDoctor";
 import AdminPatient from "./components/Admin/AdminPatient";
 import AdminQuery from "./components/Admin/AdminQuery";
 import AboutUs from "./components/Patient/AboutUs";
-import Appointment from "./components/Patient/Appointment";
 import ContactUs from "./components/Patient/ContactUs";
 import PrivacyPolicy from "./components/Patient/PrivacyPolicy.jsx";
 import TermsAndConditions from "./components/Patient/TermsAndConditions.jsx";
@@ -37,7 +36,6 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/appointment" element={<Appointment />} />
             <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route

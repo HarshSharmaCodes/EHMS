@@ -1,9 +1,11 @@
+import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import profilePic from "../../../assets/User.jpg";
 import UserSidebar from "./UserSidebar";
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 function UserBookAppointment() {
   const [userData, setuserData] = useState({});
   const [userName, setName] = useState("");
@@ -19,6 +21,8 @@ function UserBookAppointment() {
   const [doctors, setDoctors] = useState([]);
   const [specialization, setSpecialization] = useState("");
   const [specializations, setSpecializations] = useState([]);
+
+  const apiURL = "http://localhost:5000";
 
   const getDay = () => {
     const today = new Date();
@@ -37,7 +41,7 @@ function UserBookAppointment() {
     };
 
     const fetchDoctors = async () => {
-      const res = await axios.get("http://localhost:5000/doctor/get-doctors");
+      const res = await axios.get(`${apiURL}/doctor/get-doctors`);
       setDoctors(res.data);
       const specs = [...new Set(res.data.map((doc) => doc.specialization))];
       setSpecializations(specs);
@@ -51,7 +55,7 @@ function UserBookAppointment() {
     setDoctor(doctorId);
     setTime(""); // Reset time
     try {
-      const res = await axios.get(`http://localhost:5000/doctor/get-timings/${doctorId}`);
+      const res = await axios.get(`${apiURL}/doctor/get-timings/${doctorId}`);
       setAvailableTimings(res.data.timings || []);
     } catch (err) {
       console.error("Failed to fetch timings", err);
@@ -59,8 +63,39 @@ function UserBookAppointment() {
     }
   };
 
+  const makePayment = async () => {
+    const stripe = await stripePromise;
+
+    const product = {
+      name: "Doctor Appointment",
+      image: "https://cdn-icons-png.flaticon.com/512/3209/3209265.png", // any placeholder image
+      price: 20, // USD - You can dynamically set it per doctor
+      quantity: 1,
+    };
+
+    try {
+      const response = await axios.post(
+        `${apiURL}/appointment/create-checkout-session`,
+        {
+          products: [product],
+        }
+      );
+
+      const result = await stripe.redirectToCheckout({
+        sessionId: response.data.id,
+      });
+
+      if (result.error) {
+        console.log(result.error.message);
+      }
+    } catch (error) {
+      console.error("Payment error:", error.message);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!doctor || !appointmentDate || !time || !reason) {
       Swal.fire({
         title: "Missing Fields",
@@ -71,20 +106,26 @@ function UserBookAppointment() {
     }
 
     try {
-      await axios.post("http://localhost:5000/appointment/add-appointment", {
-        patient: userData.userName,
+      const appointmentData = {
+        patient: userName,
         phone: mobileNumber,
-        doctor: doctor,
-        appointmentDate: appointmentDate,
-        reason: reason,
-        email: email,
-        time: time,
-      });
+        doctor,
+        appointmentDate,
+        reason,
+        email,
+        time,
+      };
+
+      localStorage.setItem("appointmentData", JSON.stringify(appointmentData));
+
       Swal.fire({
-        title: "Success",
+        title: "Redirecting to Payment...",
         icon: "success",
-        text: "Appointment request sent successfully!",
+        showConfirmButton: false,
+        timer: 1500,
       });
+
+      await makePayment();
     } catch (err) {
       Swal.fire({
         title: "Error",
@@ -104,7 +145,10 @@ function UserBookAppointment() {
         <UserSidebar profilePic={profilePic} userName={userData.userName} />
         <div className="w-[70%] ms-24 p-4 flex flex-col justify-around">
           <p className="font-semibold text-3xl">Book Appointment</p>
-          <form className="flex flex-col h-[80%] justify-between" onSubmit={handleSubmit}>
+          <form
+            className="flex flex-col h-[80%] justify-between"
+            onSubmit={handleSubmit}
+          >
             <div className="w-full flex justify-between">
               <div className="flex flex-col w-[50%]">
                 <p>Appointment Date:</p>
@@ -190,7 +234,7 @@ function UserBookAppointment() {
               type="submit"
               className="bg-black w-[95%] text-white p-2 rounded-full"
             >
-              Book Now
+              Book Now & Pay
             </button>
           </form>
         </div>

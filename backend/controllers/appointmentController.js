@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Appointment = require("../models/appointment");
 const checkAccess = require("../middlewares/checkAccess");
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 router.get("/get-appointments/:email", async (req, res) => {
   const { email } = req.params;
@@ -37,7 +38,6 @@ router.put("/update-status/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 router.get("/get-appointment/:id", async (req, res) => {
   const { id } = req.params;
@@ -97,5 +97,35 @@ router.post("/add-appointment", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+router.post("/create-checkout-session", async (req, res) => {
+  const { products } = req.body;
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: products.map((product) => ({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: product.name,
+            images: [product.image],
+          },
+          unit_amount: product.price * 100, // Stripe uses paise/cents
+        },
+        quantity: product.quantity,
+      })),
+      mode: "payment",
+      success_url: "http://localhost:5173/success",
+      cancel_url: "http://localhost:5173/cancel",
+    });
+
+    res.json({ id: session.id });
+  } catch (error) {
+    console.error("Stripe session error:", error);
+    res.status(500).json({ error: "Failed to create checkout session" });
+  }
+});
+
 
 module.exports = router;

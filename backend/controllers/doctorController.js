@@ -81,13 +81,17 @@ router.delete("/delete-doctor/:id", async (req, res) => {
 
 router.post("/add-doctor", async (req, res) => {
   const { name, email, specialization, timings } = req.body;
-  if (!Array.isArray(timings) || timings.length === 0) {
+  
+  if (!name || !email || !specialization) {
+    return res.status(400).json({ error: "Name, email, and specialization are required!" });
+  }
+
+  if (!Array.isArray(timings)) {
     return res.status(400).json({ error: "Doctor timings are required" });
   }
 
   try {
     const existingUser = await Doctor.findOne({ email });
-
     if (existingUser) {
       return res
         .status(400)

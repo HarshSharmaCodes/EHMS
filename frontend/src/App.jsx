@@ -16,11 +16,13 @@ import UserBookAppointment from "./components/Profile/user/UserBookAppointment";
 import UserMedication from "./components/Profile/user/UserMedication";
 import UserProfilePage from "./components/Profile/user/UserProfile.jsx";
 import AdminDashPage from "./page/AdminDashPage";
+import Cancel from "./page/Cancel.jsx";
 import DoctorAuthPage from "./page/DoctorAuthPage";
 import DoctorProfilePage from "./page/DoctorProfilePage";
 import HomePage from "./page/HomePage";
 import SignInPage from "./page/SignInPage";
 import SignUpPage from "./page/SignUpPage";
+import Success from "./page/Success.jsx";
 import { persistor, store } from "./redux/store.js";
 
 import PrivateRoute from "./components/Routes/PrivateRoute.jsx";
@@ -68,6 +70,8 @@ function App() {
               <Route path="/admin-patient" element={<AdminPatient />} />
               <Route path="/admin-query" element={<AdminQuery />} />
               <Route path="/admin-newsletter" element={<AdminNewsletter />} />
+              <Route path="/cancel" element={<Cancel />} />
+              <Route path="/Success" element={<Success />} />
             </Route>
           </Routes>
         </Router>
